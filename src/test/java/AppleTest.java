@@ -1,21 +1,19 @@
+import PageObject.BasePage;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
-import PageObject.MainPage;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.time.Duration;
+import java.util.List;
 
-public class AppleTest {
+public class AppleTest extends BasePage {
 
     WebDriver driver = new ChromeDriver();
+    //public void initializeDriver(){};
 
     @BeforeMethod
     public void setUp() {
@@ -26,31 +24,50 @@ public class AppleTest {
 
     @Test
     public void searchTest() {
-        // клик
-        WebElement searchButton = driver.findElement(By.id("globalnav-menubutton-link-search"));
+        // ожидание унес наверх
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+
+        By searchButtonSelector = By.id("globalnav-menubutton-link-search");
+        WebElement searchButton = driver.findElement(searchButtonSelector);
         searchButton.click();
 
         //WebElement searchField = driver.findElement(By.cssSelector("[class='globalnav-searchfield-input']"));
         //searchField.sendKeys("iphone 15");
 
         //с ожиданием работает, видимо из за анимации
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        WebElement searchField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".globalnav-searchfield-input")));
-        searchField.sendKeys("iphone 15");
-        searchField.sendKeys(Keys.ENTER);
+        //селекторы отдельно
+        By searchField = By.cssSelector(".globalnav-searchfield-input");
+        // ожидание отдельно
+        wait.until(ExpectedConditions.visibilityOfElementLocated(searchField));
+        //поиск отдельно
+        WebElement searchFieldAction = driver.findElement(searchField);
+        //WebElement searchField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".globalnav-searchfield-input")));
 
-        WebElement searchText = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("[class='rf-serp-productname-link']")));
+        searchFieldAction.sendKeys("iphone 15");
+        searchFieldAction.sendKeys(Keys.ENTER);
 
-        String text = searchText.getText();
+
+        List<WebElement> list_of_product;
+
+        By productName = By.cssSelector("[class='rf-serp-productname-link']");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(productName));
+        list_of_product = driver.findElements(productName);
 
         String find_iPhone = "iPhone 15";
-        if (text.contains(find_iPhone)) {
-            System.out.println("Бинго, нашли айфон 15");
-        } else {
-            System.out.println("не сегодня");
-        }
-        //[class="rf-serp-productname-link"]
 
+        for (WebElement element : list_of_product) {
+            String text = element.getText();
+            Assert.assertTrue(text.contains(find_iPhone),"не найдено");
+//            if (text.contains(find_iPhone)) {
+//                System.out.println("Бинго, нашли айфон 15");
+//            } else {
+//                System.out.println("не сегодня");
+//            }
+        }
+
+
+        //[class="rf-serp-productname-link"]
         //Thread.sleep(1000);
         //между этим и серчфилдом[id="globalnav-menubutton-link-search"] + аннотации вместо маина + теория
         //driver.quit();
