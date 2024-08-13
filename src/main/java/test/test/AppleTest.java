@@ -10,10 +10,11 @@ import org.testng.annotations.Test;
 import java.time.Duration;
 import java.util.List;
 
-public class AppleTest extends BasePage {
+public class AppleTest extends BaseTest {
 
     WebDriver driver = new ChromeDriver();
-    //public void initializeDriver(){};
+
+    private String find_iPhone = "iPhone 15";
 
     @BeforeMethod
     public void setUp() {
@@ -65,14 +66,8 @@ public class AppleTest extends BasePage {
 //                System.out.println("не сегодня");
 //            }
         }
-
-
-        //[class="rf-serp-productname-link"]
-        //Thread.sleep(1000);
-        //между этим и серчфилдом[id="globalnav-menubutton-link-search"] + аннотации вместо маина + теория
         //driver.quit();
     }
-
 }
 
 
